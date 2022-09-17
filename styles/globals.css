@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'sofiapro-light';
+    src: url('/fonts/sofiapro-light.otf');
+}
+
+header {
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 5%);
+}
+
+#links {
+    display: flex;
+}
+
+.logo {
+    cursor: pointer;
+}
