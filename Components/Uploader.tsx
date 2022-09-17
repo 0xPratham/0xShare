@@ -108,7 +108,7 @@ const Uploader: FC = () => {
                     ? { marginTop: '3rem', height: '19rem' }
                     : { marginTop: '3rem', height: 'auto' }
             }
-            bgColor={colorMode === 'light' ? '#dbe1e8' : ''}
+            bgColor={'transparent'}
         >
             {!uploading ? (
                 <VStack h="100%" justifyContent="center">

@@ -29,7 +29,7 @@ const Navbar: FC = () => {
             as="header"
             w="100%"
             padding={3}
-            backgroundColor={colorMode === 'light' ? '#fff' : 'transparent'}
+            backgroundColor={'transparent'}
             justifyContent="space-between"
         >
             <Link href="/">
