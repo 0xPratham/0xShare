@@ -31,8 +31,8 @@ const privacyPolicy = () => {
                     Welcome to our website. If you continue to browse and use
                     this website you are agreeing to comply with and be bound by
                     the following terms and conditions of use, which together
-                    with our privacy policy govern 0xShare''s relationship with
-                    you in relation to this website.
+                    with our privacy policy govern 0xShare relationship with you
+                    in relation to this website.
                 </Text>
                 <Heading style={style} size="md">
                     The use of this website is subject to the following terms of
