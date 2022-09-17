@@ -62,19 +62,17 @@ const Footer: FC = () => {
                         &copy; {new Date().getFullYear()} 0xShare, Inc. All
                         rights reserved.
                         <br />
-                        <Text fontSize="xs">
-                            <Link href="/terms">
-                                <Button variant="link" size="xs">
-                                    Terms & Conditions
-                                </Button>
-                            </Link>{' '}
-                            |{' '}
-                            <Link href="/privacy">
-                                <Button variant="link" size="xs">
-                                    Privacy Policy
-                                </Button>
-                            </Link>
-                        </Text>
+                        <Link href="/terms">
+                            <Button variant="link" size="xs">
+                                Terms & Conditions
+                            </Button>
+                        </Link>{' '}
+                        |{' '}
+                        <Link href="/privacy">
+                            <Button variant="link" size="xs">
+                                Privacy Policy
+                            </Button>
+                        </Link>
                     </Text>
                     <Text fontSize="sm" color="subtle" display="flex">
                         Created with &nbsp;
