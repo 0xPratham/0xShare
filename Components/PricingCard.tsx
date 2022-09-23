@@ -17,6 +17,7 @@ export interface PricingCardData {
     features: string[]
     name: string
     price: string
+    per: string
 }
 
 interface PricingCardProps extends CardProps {
@@ -27,7 +28,7 @@ interface PricingCardProps extends CardProps {
 
 export const PricingCard = (props: PricingCardProps) => {
     const { data, icon, button, ...rest } = props
-    const { features, price, name } = data
+    const { features, price, name, per } = data
     const accentColor = useColorModeValue('blue.600', 'blue.200')
 
     return (
@@ -54,7 +55,7 @@ export const PricingCard = (props: PricingCardProps) => {
                     {price}
                 </Heading>
                 <Text fontWeight="inherit" fontSize="2xl">
-                    / yr
+                    / {per}
                 </Text>
             </Flex>
             <List spacing="4" mb="8" maxW="28ch" mx="auto">

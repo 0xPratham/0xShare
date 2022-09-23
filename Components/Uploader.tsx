@@ -1,21 +1,21 @@
 import { FC, useRef, useState, ChangeEvent, useContext } from 'react'
 import { VStack, Button } from '@chakra-ui/react'
 import { AiFillFileAdd } from 'react-icons/ai'
-import { useColorMode } from '@chakra-ui/react'
 import Progressbar from './ProgressBar'
 import Copylink from './Copylink'
 import { UserContext } from '../lib/context'
 import { UploadFile } from '../lib/UploadFile'
 import { useToast } from '@chakra-ui/react'
+import getLimit from '../helpers/filesizelimit'
+import getDirectoryName from '../helpers/getdirectoryname'
 
 const Uploader: FC = () => {
     const toast = useToast()
-    const { user } = useContext(UserContext)
+    const { user, plan, active } = useContext(UserContext)
     const inputFile = useRef<HTMLInputElement | null>(null)
     const uploadTrigger = () => {
         inputFile?.current?.click()
     }
-    const { colorMode } = useColorMode()
     const [uploading, setuploading] = useState<boolean>(false)
     const [progress, setProgress] = useState<number>(0)
     const [downloadURL, setDownloadURL] = useState<string>('')
@@ -42,13 +42,16 @@ const Uploader: FC = () => {
             const file = e.target.files[0]
             const extension = file.type.split('/')[1]
             const file_size = file.size / 1024 / 1024
-            if (user?.uid) {
-                if (file_size > 100) return
+            if (user?.uid && !plan && !active) {
+                if (file_size > 100) {
+                    show_toast('File upload failed.', 'File size is too large.')
+                    e.target.value = ''
+                    return
+                }
                 const res = await UploadFile(
                     process.env.NEXT_PUBLIC_LOGIN_USER
                         ? process.env.NEXT_PUBLIC_LOGIN_USER
                         : '',
-                    user.uid,
                     extension,
                     setuploading,
                     file,
@@ -61,17 +64,40 @@ const Uploader: FC = () => {
                         'Something went wrong, try again later.'
                     )
                 }
+                e.target.value = ''
+                return
+            } else if (user?.uid && plan && active) {
+                if (file_size > Number(getLimit(plan))) {
+                    show_toast('File upload failed.', 'File size is too large.')
+                    e.target.value = ''
+                    return
+                }
+                const res = await UploadFile(
+                    getDirectoryName(plan),
+                    extension,
+                    setuploading,
+                    file,
+                    setProgress,
+                    setDownloadURL
+                )
+                if (res === 'err') {
+                    show_toast(
+                        'File upload failed.',
+                        'Something went wrong, try again later.'
+                    )
+                }
+                e.target.value = ''
                 return
             } else {
                 if (file_size > 70) {
                     show_toast('File upload failed.', 'File size is too large.')
+                    e.target.value = ''
                     return
                 }
                 const res = await UploadFile(
                     process.env.NEXT_PUBLIC_ANONYMOUS_USER
                         ? process.env.NEXT_PUBLIC_ANONYMOUS_USER
                         : '',
-                    '',
                     extension,
                     setuploading,
                     file,
@@ -84,6 +110,7 @@ const Uploader: FC = () => {
                         'Something went wrong, try again later.'
                     )
                 }
+                e.target.value = ''
                 return
             }
         } catch (e) {
@@ -127,9 +154,15 @@ const Uploader: FC = () => {
                         &nbsp;Choose Files
                     </Button>
                     <p>
-                        {user
-                            ? 'Max file size 100MB. Buy subscription for more'
-                            : 'Max file size 70MB. Sign Up for more'}
+                        {user &&
+                            !plan &&
+                            !active &&
+                            'Max file size 100MB. Buy subscription for more'}
+                        {!user && 'Max file size 70MB. Sign Up for more'}
+                        {user &&
+                            plan &&
+                            active &&
+                            `Max file size ${getLimit(plan)}MB`}
                     </p>
                 </VStack>
             ) : (

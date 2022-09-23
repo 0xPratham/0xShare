@@ -1,21 +1,76 @@
 import { Box, SimpleGrid, useColorModeValue } from '@chakra-ui/react'
-import { useContext } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { UserContext } from '../lib/context'
 import { signOut } from '../lib/auth'
 import { FC } from 'react'
 import ProfileCard from './ProfileCard'
 import { useRouter } from 'next/router'
 import AuthCheck from './AuthCheck'
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+    Button
+} from '@chakra-ui/react'
+import { fetchFromAPI } from '../helpers/fetchfromapi'
+import { useToast } from '@chakra-ui/react'
 
 const Profile: FC = () => {
-    const { user } = useContext(UserContext)
+    const [loading, setLoading] = useState<boolean>(false)
+    const [expiretime, setExpireTime] = useState<number | undefined>()
+    const toast = useToast()
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { user, plan, active } = useContext(UserContext)
     const router = useRouter()
+
+    const show_toast = (
+        title: string,
+        description?: string,
+        varient?: boolean
+    ) => {
+        return toast({
+            title,
+            description,
+            status: varient ? 'success' : 'error',
+            duration: 6000,
+            isClosable: true
+        })
+    }
+
+    useEffect(() => {
+        if (user) {
+            fetchFromAPI('/api/expire', 'POST').then(res => {
+                if (res.status) {
+                    setExpireTime(res.msg)
+                }
+            })
+        }
+        return
+    }, [user])
+
+    const unsubscribe_customer = async () => {
+        setLoading(true)
+        const data = await fetchFromAPI('/api/unsubscribe', 'POST')
+        if (data.status) {
+            setLoading(false)
+            return show_toast('Success', data?.msg, data.status)
+        } else {
+            setLoading(false)
+            return show_toast('Error', data?.msg, data.status)
+        }
+    }
+
     const data = [
         {
             img: user?.photoURL,
             heading: user?.displayName,
             sub_heading: user?.email,
-            description: 'Current membership status is free',
+            description: `Current membership status is`,
             active: true,
             button: [
                 {
@@ -29,7 +84,12 @@ const Profile: FC = () => {
         {
             img: '/vip.png',
             heading: 'VIP',
-            sub_heading: 'Become A Vip User',
+            sub_heading: `${
+                plan && active
+                    ? expiretime &&
+                      `Expired on ${new Date(expiretime * 1000).toDateString()}`
+                    : 'Become A Vip User'
+            }`,
             description: 'Manage Membership',
             active: false,
             button: [
@@ -42,11 +102,13 @@ const Profile: FC = () => {
                     }
                 },
                 {
-                    title: 'Subscription',
-                    bg: 'green.500',
-                    hoverColor: 'green.300',
+                    title: `${
+                        plan && active ? 'Unsubscribe' : 'Buy Subscription'
+                    }`,
+                    bg: `${plan && active ? 'red.500' : 'green.500'}`,
+                    hoverColor: `${plan && active ? 'red.300' : 'green.300'}`,
                     link: () => {
-                        router.push('/subscription')
+                        plan && active ? onOpen() : router.push('/vip')
                     }
                 }
             ]
@@ -72,6 +134,7 @@ const Profile: FC = () => {
                     {data.map((profile, keys) => {
                         return (
                             <ProfileCard
+                                plan={plan && active ? plan : null}
                                 key={keys}
                                 img={profile?.img}
                                 heading={profile?.heading}
@@ -91,6 +154,35 @@ const Profile: FC = () => {
                     })}
                 </SimpleGrid>
             </Box>
+            {plan && active && (
+                <Modal isOpen={isOpen} onClose={onClose}>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>Warning!</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <p>
+                                After you unsubscribe the plan, your plan will
+                                expire at the end of the period and at that
+                                time, you can&apos;t buy another plan and your
+                                card doesn&apos;t get charged at the end of the
+                                period.
+                            </p>
+                        </ModalBody>
+
+                        <ModalFooter>
+                            <Button
+                                colorScheme="red"
+                                mr={3}
+                                onClick={unsubscribe_customer}
+                                isLoading={loading}
+                            >
+                                Unsubscribe
+                            </Button>
+                        </ModalFooter>
+                    </ModalContent>
+                </Modal>
+            )}
         </AuthCheck>
     )
 }

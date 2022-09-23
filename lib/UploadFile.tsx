@@ -8,8 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { Dispatch, SetStateAction } from 'react'
 
 export const UploadFile = async (
-    directory: string,
-    uid: string | undefined,
+    directory: string | undefined,
     extension: string,
     setUploading: Dispatch<SetStateAction<boolean>>,
     file: File,
@@ -19,11 +18,7 @@ export const UploadFile = async (
     try {
         const storageRef = ref(
             getStorage(),
-            uid?.length && uid.length > 0
-                ? `${directory}/${uid}/${
-                      Date.now() + '___' + uuidv4()
-                  }.${extension}`
-                : `${directory}/${Date.now() + '___' + uuidv4()}.${extension}`
+            `${directory}/${Date.now() + '___' + uuidv4()}.${extension}`
         )
         setUploading(true)
         const uploadTask = uploadBytesResumable(storageRef, file)

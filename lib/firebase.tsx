@@ -17,4 +17,4 @@ if (!getApps().length) {
 
 export const auth = getAuth()
 export const provider = new GoogleAuthProvider()
-export const firestore = getFirestore()
+export const db = getFirestore()

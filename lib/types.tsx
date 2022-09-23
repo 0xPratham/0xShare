@@ -23,6 +23,7 @@ export interface profileCardprops {
     heading: string | null | undefined
     sub_heading: string | undefined
     description: string | undefined
+    plan: string | null
     active: boolean
     buttons: {
         title: string
@@ -30,4 +31,16 @@ export interface profileCardprops {
         hoverColor: string
         link: any
     }[]
+}
+
+export interface invoices {
+    id: string
+    amount_paid: number
+    date: number
+    pdf: string
+}
+
+export interface seo {
+    title: string
+    url: string
 }

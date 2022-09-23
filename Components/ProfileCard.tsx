@@ -53,7 +53,15 @@ const ProfileCard: FC<profileCardprops> = props => {
             </Text>
             {props?.description && (
                 <Text textAlign={'center'} color={textColor} px={3}>
-                    {props.description}
+                    {props.description}&nbsp;
+                    {props.plan ? (
+                        <b style={{ fontWeight: 'bolder' }}>
+                            {props.plan.charAt(0).toUpperCase() +
+                                props.plan.slice(1)}
+                        </b>
+                    ) : (
+                        'Free'
+                    )}
                 </Text>
             )}
             <Stack mt={8} direction={'row'} spacing={4}>

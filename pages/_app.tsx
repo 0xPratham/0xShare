@@ -5,24 +5,24 @@ import theme from '../lib/theme'
 import Navbar from '../Components/Navbar'
 import Footer from '../Components/Footer'
 import { UserContext } from '../lib/context'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import { auth } from '../lib/firebase'
+import { Elements } from '@stripe/react-stripe-js'
+import { GetUserData } from '../lib/hooks'
 
 function MyApp({ Component, pageProps }: AppProps) {
-    const [user]: any = useAuthState(auth)
+    const userData = GetUserData()
     return (
-        <>
+        <Elements stripe={userData.stripePromise}>
             <ChakraProvider theme={theme}>
                 <ColorModeScript
                     initialColorMode={theme?.config?.initialColorMode}
                 />
-                <UserContext.Provider value={{ user }}>
+                <UserContext.Provider value={userData}>
                     <Navbar />
                     <Component {...pageProps} />
                     <Footer />
                 </UserContext.Provider>
             </ChakraProvider>
-        </>
+        </Elements>
     )
 }
 
