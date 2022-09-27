@@ -8,6 +8,7 @@ import { UploadFile } from '../lib/UploadFile'
 import { useToast } from '@chakra-ui/react'
 import getLimit from '../helpers/filesizelimit'
 import getDirectoryName from '../helpers/getdirectoryname'
+import getExtension from '../helpers/getExtension'
 
 const Uploader: FC = () => {
     const toast = useToast()
@@ -40,7 +41,7 @@ const Uploader: FC = () => {
         try {
             if (!e.target.files) return
             const file = e.target.files[0]
-            const extension = file.type.split('/')[1]
+            const extension = getExtension(file.name)
             const file_size = file.size / 1024 / 1024
             if (user?.uid && !plan && !active) {
                 if (file_size > 100) {
