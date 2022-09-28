@@ -9,9 +9,11 @@ const config = {
 if (!admin.apps.length) {
     admin.initializeApp({
         credential: admin.credential.cert(config),
-        databaseURL: 'https://0xshare.firebaseio.com'
+        databaseURL: 'https://0xshare.firebaseio.com',
+        storageBucket: 'gs://xshare-bb9db.appspot.com'
     })
 }
 
 export const db = admin.firestore()
 export const auth = admin.auth()
+export const bucket = admin.storage().bucket()

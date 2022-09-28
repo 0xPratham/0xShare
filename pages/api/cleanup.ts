@@ -1,24 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import {
-    getStorage,
-    ref,
-    listAll,
-    deleteObject,
-    StorageReference
-} from 'firebase/storage'
+import { bucket } from '../../lib/firebase-admin'
+import { File } from '@google-cloud/storage'
 
-const delete_item = async (storageref: StorageReference) => {
+const delete_item = async (folderName: string) => {
     try {
-        await listAll(storageref)
-            .then(result => {
-                result.items.length > 0 &&
-                    result.items.forEach(file => {
-                        deleteObject(file)
-                    })
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        await bucket.getFiles({ prefix: `${folderName}/` }).then(result => {
+            result.length > 0 &&
+                result.map(file => {
+                    file.length > 0 &&
+                        file.map((data: File) => {
+                            let file_date: Date = new Date(
+                                data.metadata.timeCreated
+                            )
+                            file_date.setMinutes(file_date.getMinutes() + 30)
+                            if (new Date() > file_date) {
+                                bucket.file(data?.metadata?.name).delete()
+                            }
+                        })
+                })
+        })
         return
     } catch {
         return
@@ -34,43 +34,30 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                     const cleanup_object = [
                         {
                             id: 1,
-                            ref: ref(
-                                getStorage(),
-                                process.env.NEXT_PUBLIC_ANONYMOUS_USER
-                            )
+                            folderName: process.env.NEXT_PUBLIC_ANONYMOUS_USER
                         },
                         {
                             id: 2,
-                            ref: ref(
-                                getStorage(),
-                                process.env.NEXT_PUBLIC_LOGIN_USER
-                            )
+                            folderName: process.env.NEXT_PUBLIC_LOGIN_USER
                         },
                         {
                             id: 3,
-                            ref: ref(
-                                getStorage(),
-                                process.env.NEXT_PUBLIC_MONTHLY_USER
-                            )
+                            folderName: process.env.NEXT_PUBLIC_MONTHLY_USER
                         },
                         {
                             id: 4,
-                            ref: ref(
-                                getStorage(),
-                                process.env.NEXT_PUBLIC_QUARTERLY_USER
-                            )
+                            folderName: process.env.NEXT_PUBLIC_QUARTERLY_USER
                         },
                         {
                             id: 5,
-                            ref: ref(
-                                getStorage(),
-                                process.env.NEXT_PUBLIC_YEARLY_USER
-                            )
+                            folderName: process.env.NEXT_PUBLIC_YEARLY_USER
                         }
                     ]
                     await Promise.all(
                         cleanup_object.map(async data => {
-                            await delete_item(data.ref)
+                            await delete_item(
+                                data.folderName ? data.folderName : ''
+                            )
                         })
                     )
                     return res
