@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.10.4",
     "@google-cloud/storage": "^6.5.2",
     "@stripe/react-stripe-js": "^1.10.0",
-    "@stripe/stripe-js": "^1.36.0",
+    "@stripe/stripe-js": "^1.37.0",
     "firebase": "^9.10.0",
     "firebase-admin": "^11.0.1",
     "framer-motion": "^7.3.6",
