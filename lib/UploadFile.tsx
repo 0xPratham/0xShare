@@ -6,6 +6,7 @@ import {
 } from 'firebase/storage'
 import { v4 as uuidv4 } from 'uuid'
 import { Dispatch, SetStateAction } from 'react'
+import { fetchFromAPI } from '../helpers/fetchfromapi'
 
 export const UploadFile = async (
     directory: string | undefined,
@@ -34,7 +35,15 @@ export const UploadFile = async (
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-                    setDownloadURL(downloadURL)
+                    fetchFromAPI('api/shorten', 'POST', {
+                        url: downloadURL
+                    }).then(res => {
+                        if (res.status) {
+                            setDownloadURL(res.url)
+                        } else {
+                            setDownloadURL(downloadURL)
+                        }
+                    })
                 })
             }
         )
