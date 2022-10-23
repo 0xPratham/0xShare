@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { decodeJWT } from '../../utils/decodeJWT'
 import { setURL } from '../../lib/redis'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -19,13 +18,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 return res.status(422).json({
                     status: false,
                     msg: 'Domain is not allowed!'
-                })
-            }
-            const user = await decodeJWT(req)
-            if (user === 'Unauthorized!') {
-                return res.status(401).json({
-                    status: false,
-                    msg: 'Unauthorized!'
                 })
             }
             const shortURL = await setURL(req.body.url)

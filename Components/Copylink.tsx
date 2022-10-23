@@ -22,6 +22,10 @@ const Copylink: FC<props> = props => {
                     {hasCopied ? 'Copied' : 'Copy'}
                 </Button>
             </HStack>
+            <span style={{ fontSize: '13px' }}>
+                file will only be valid for{' '}
+                <b style={{ color: 'red' }}>30min</b>
+            </span>
             <Heading size="sm" color="red.100">
                 Upload more files?{' '}
                 <b style={{ cursor: 'pointer' }} onClick={props.reset}>
