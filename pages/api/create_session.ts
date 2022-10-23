@@ -6,6 +6,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     try {
         const plans = ['MONTHLY', 'QUARTERLY', 'YEARLY']
         if (req.method === 'POST') {
+            if (typeof req.body.plan !== 'string') {
+                return res.status(400).json({
+                    status: false,
+                    msg: 'Plan must be a string type!'
+                })
+            }
             if (
                 !req.body.plan ||
                 !plans.includes(req.body.plan.toUpperCase())
