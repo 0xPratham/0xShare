@@ -18,7 +18,7 @@
     "@stripe/stripe-js": "^1.42.0",
     "@upstash/redis": "^1.15.0",
     "firebase": "^9.12.1",
-    "firebase-admin": "^11.2.0",
+    "firebase-admin": "^11.4.1",
     "framer-motion": "^7.6.1",
     "micro": "^9.4.1",
     "nanoid": "^4.0.0",
